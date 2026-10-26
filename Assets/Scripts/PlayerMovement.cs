@@ -2,30 +2,20 @@ using UnityEngine;
 
 public class PlayerMovement : BaseMovement
 {
-    private const string Jump = nameof(Jump);
+    [SerializeField] private InputService _inputService;
+    [SerializeField] private Jump _jump;
 
-    [SerializeField] private Transform _groundCheck;
-    [SerializeField] private LayerMask _groundLayer;
-
-    private float _groundCheckRadius = 0.1f;
-    private float _jumpForce = 8f;
-
-    private bool _isGrounded;
-
-    protected override void Update()
+    private void Update()
     {
-        _direction = Input.GetAxis(Horizontal);
-        _isGrounded = Physics2D.OverlapCircle(_groundCheck.position, _groundCheckRadius, _groundLayer);
-        JumpCheck();
+        _direction = _inputService.GetDirection();
 
-        base.Update();
+        FlipCheck();
 
-        _animator.SetBool(Jump, !_isGrounded);
+        _jump.JumpCheck(_inputService.isTryingToJump());
     }
 
-    private void JumpCheck()
+    private void FixedUpdate()
     {
-        if (Input.GetButtonDown(Jump) && _isGrounded)
-            _rigidbody.linearVelocityY = _jumpForce;
+        Move();
     }
 }

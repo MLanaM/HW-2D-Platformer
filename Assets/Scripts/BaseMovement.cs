@@ -4,8 +4,6 @@ using UnityEngine;
 
 public abstract class BaseMovement : MonoBehaviour
 {
-    protected const string Horizontal = nameof(Horizontal);
-
     [SerializeField] protected float _moveSpeed = 5f;
     [SerializeField] protected Animator _animator;
     [SerializeField] protected Rigidbody2D _rigidbody;
@@ -21,26 +19,27 @@ public abstract class BaseMovement : MonoBehaviour
             _rigidbody = rigidbody;
     }
 
-    protected virtual void Update()
+    protected virtual void Move()
+    {
+        _rigidbody.linearVelocity = new Vector2(_direction * _moveSpeed, _rigidbody.linearVelocity.y);
+        AnimatorUpdate();
+    }
+
+    protected virtual void FlipCheck()
     {
         if (_direction != 0)
             Flip(_direction < 0);
-
-        _animator.SetFloat(Horizontal, Mathf.Abs(_direction));
     }
 
-    protected virtual void FixedUpdate() => 
-        Move();
-
-    protected virtual void Move() =>
-        _rigidbody.linearVelocity = new Vector2(_direction * _moveSpeed, _rigidbody.linearVelocity.y);
-
-    protected virtual void Flip(bool lookLeft)
+    private void Flip(bool lookLeft)
     {
-        Vector3 scale = transform.localScale;
+        Vector3 rotation = transform.rotation.eulerAngles;
 
-        scale.x = lookLeft ? -Mathf.Abs(scale.x) : Mathf.Abs(scale.x);
+        rotation.y = lookLeft ? 180f : 0f;
 
-        transform.localScale = scale;
+        transform.rotation = Quaternion.Euler(rotation);
     }
+
+    private void AnimatorUpdate() =>
+        _animator.SetFloat(InputConstans.Horizontal, Mathf.Abs(_direction));
 }

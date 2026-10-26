@@ -14,17 +14,27 @@ public class EnemyMovement : BaseMovement
         _direction = 1f;
     }
 
-    protected override void FixedUpdate()
+    private void Update()
     {
-        if (Mathf.Abs(transform.position.x - _startX) >= _patrolDistance)
-            TurnAround();
+        FlipCheck();
+    }
 
-        base.FixedUpdate();
+    private void FixedUpdate()
+    {
+        Move();
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Wall"))
+        if (collision.gameObject.TryGetComponent<Wall>(out Wall wall))
+            TurnAround();
+    }
+
+    protected override void FlipCheck()
+    {
+        base.FlipCheck();
+
+        if (Mathf.Abs(transform.position.x - _startX) >= _patrolDistance)
             TurnAround();
     }
 

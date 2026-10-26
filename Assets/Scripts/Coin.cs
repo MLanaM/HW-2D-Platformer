@@ -12,9 +12,9 @@ public class Coin : MonoBehaviour
         SpawnPositionIndex = index;
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D collider)
     {
-        if (other.CompareTag("Player"))
+        if (collider.gameObject.TryGetComponent<Player>(out Player player))
             OnCoinCollected();
     }
 
